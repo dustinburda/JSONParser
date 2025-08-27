@@ -8,6 +8,7 @@
 #include "Token.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 class Tokenizer {
@@ -22,6 +23,8 @@ private:
 
     std::optional<char> Peek();
     std::optional<char> Consume();
+    std::optional<char> PeekN(int n);
+    void ConsumeWhitespace();
 
 
     std::string src_;

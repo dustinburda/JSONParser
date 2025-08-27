@@ -12,7 +12,6 @@ enum class TokenType {
     CloseBrace,
     OpenSquareBracket,
     CloseSquareBracket,
-    Quote,
     String,
     Number,
     True,
@@ -23,7 +22,8 @@ enum class TokenType {
 
 struct Token {
 public:
-
+    Token(std::string token, TokenType type)
+        : token_{token}, type_{type} {}
 private:
     std::string token_;
     TokenType type_;
