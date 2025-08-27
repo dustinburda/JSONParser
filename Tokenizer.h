@@ -23,8 +23,10 @@ private:
 
     std::optional<char> Peek();
     std::optional<char> Consume();
-    std::optional<char> PeekN(int n);
+    std::optional<std::string> PeekN(int n);
     void ConsumeWhitespace();
+    std::string ConsumeString();
+    std::string ConsumeNumber();
 
 
     std::string src_;

@@ -28,26 +28,66 @@ void Tokenizer::InternalTokenize(std::vector<Token>& tokens) {
        char c = Peek().value();
 
        switch (c) {
-           case '{':
+           case '{': {
                Consume();
                tokens_.push_back(Token{"", TokenType::OpenBrace});
                break;
-           case '}':
+           }
+           case '}': {
                Consume();
                tokens_.push_back(Token{"", TokenType::CloseBrace});
                break;
-           case '[':
+           }
+           case '[': {
                Consume();
                tokens_.push_back(Token{"", TokenType::OpenSquareBracket});
                break;
-           case ']':
+           }
+           case ']': {
                Consume();
                tokens_.push_back(Token{"", TokenType::CloseSquareBracket});
                break;
-           case '"':
-                std::string s = ConsumeString();
-                tokens.push_back(Token("s", TokenType::String));
-                break;
+           }
+           case '\"': {
+               std::string s = ConsumeString();
+               tokens_.push_back(Token(s, TokenType::String));
+               break;
+           }
+           case ',': {
+               Consume();
+               tokens_.push_back(Token{"", TokenType::Comma});
+               break;
+           }
+           case ':': {
+               Consume();
+               tokens_.push_back(Token{"", TokenType::Colon});
+               break;
+           }
+           default: {
+            // Parse True, False, Numbers
+                if (Peek().value() == 't') {
+                    std::string s = PeekN(4).value();
+
+                    if (s != "true")
+                        throw std::logic_error("Failed to parse source at character: " + std::to_string(index_));
+
+                    tokens_.push_back(Token{"true", TokenType::True});
+                    break;
+                } else if (Peek().value() == 'f') {
+                    std::string s = PeekN(4).value();
+
+                    if (s != "false")
+                        throw std::logic_error("Failed to parse source at character: " + std::to_string(index_));
+
+                    tokens_.push_back(Token{"true", TokenType::True});
+                    break;
+                } else if (std::isdigit(Peek().value())) {
+                    std::string s = ConsumeNumber();
+
+                    tokens_.push_back(Token{s, TokenType::Number});
+                    break;
+                }
+           }
        }
 
    }
@@ -69,14 +109,42 @@ std::optional<char> Tokenizer::Consume() {
     return src_[index_++];
 }
 
-std::optional<char> Tokenizer::PeekN(int n) {
-    if (index_ >= src_.size())
+std::optional<std::string> Tokenizer::PeekN(int n) {
+    if (index_ + n >= src_.size())
         return std::nullopt;
 
-    return src_[index_ + n - 1];
+    std::string s;
+    for(int i = index_; i < index_ + n; i++) {
+        s += src_[i];
+    }
+
+    return s;
 }
 
 void Tokenizer::ConsumeWhitespace() {
-    while (Peek() == '\t' || Peek() == '\n' || Peek() == ' ')
+    while (Peek() == '\t' || Peek() == '\n' || Peek() == ' ' || Peek() == '\r')
         Consume();
+}
+
+std::string Tokenizer::ConsumeString() {
+    Consume();
+
+    std::string s;
+    while (Peek().has_value() && Peek().value() != '\"') {
+        s += Peek().value();
+        Consume();
+    }
+
+    if (!Peek().has_value());
+
+    return s;
+}
+
+std::string Tokenizer::ConsumeNumber() {
+    std::string s;
+    while (Peek().has_value() && std::isdigit(Peek().value())) {
+        // TODO;
+    }
+
+    return s;
 }
