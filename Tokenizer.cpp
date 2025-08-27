@@ -141,9 +141,10 @@ std::string Tokenizer::ConsumeString() {
 }
 
 std::string Tokenizer::ConsumeNumber() {
+    // TODO: beef this up to the proper JSON spec, only supports positive integers
     std::string s;
     while (Peek().has_value() && std::isdigit(Peek().value())) {
-        // TODO;
+        s += Consume().value();
     }
 
     return s;
